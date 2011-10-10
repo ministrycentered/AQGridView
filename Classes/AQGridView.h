@@ -67,29 +67,29 @@ typedef enum {
 
 // Display customization
 
-- (void) gridView: (AQGridView *) gridView willDisplayCell: (AQGridViewCell *) cell forItemAtIndex: (NSUInteger) index;
+- (void) gridView: (AQGridView *) gridView willDisplayCell: (AQGridViewCell *) cell forItemAtIndexPath: (NSIndexPath*) index;
 
 // Selection
 
 // Called before selection occurs. Return a new index, or NSNotFound, to change the proposed selection.
-- (NSUInteger) gridView: (AQGridView *) gridView willSelectItemAtIndex: (NSUInteger) index;
-- (NSUInteger) gridView: (AQGridView *) gridView willSelectItemAtIndex: (NSUInteger) index numFingersTouch:(NSUInteger) numFingers;
-- (NSUInteger) gridView: (AQGridView *) gridView willDeselectItemAtIndex: (NSUInteger) index;
+- (NSIndexPath*) gridView: (AQGridView *) gridView willSelectItemAtIndexPath: (NSIndexPath*) indexPath;
+- (NSIndexPath*) gridView: (AQGridView *) gridView willSelectItemAtIndexPath: (NSIndexPath*) indexPath numFingersTouch:(NSUInteger) numFingers;
+- (NSIndexPath*) gridView: (AQGridView *) gridView willDeselectItemAtIndexPath: (NSIndexPath*) indexPath;
 // Called after the user changes the selection
-- (void) gridView: (AQGridView *) gridView didSelectItemAtIndex: (NSUInteger) index;
-- (void) gridView: (AQGridView *) gridView didSelectItemAtIndex: (NSUInteger) index numFingersTouch:(NSUInteger)numFingers;
-- (void) gridView: (AQGridView *) gridView didDeselectItemAtIndex: (NSUInteger) index;
+- (void) gridView: (AQGridView *) gridView didSelectItemAtIndexPath: (NSIndexPath*) indexPath;
+- (void) gridView: (AQGridView *) gridView didSelectItemAtIndexPath: (NSIndexPath*) indexPath numFingersTouch:(NSUInteger)numFingers;
+- (void) gridView: (AQGridView *) gridView didDeselectItemAtIndexPath: (NSIndexPath*) indexPath;
 
 // Called after animated updates finished
 - (void) gridViewDidEndUpdateAnimation:(AQGridView *) gridView;
 
 // NOT YET IMPLEMENTED
-- (void) gridView: (AQGridView *) gridView gestureRecognizer: (UIGestureRecognizer *) recognizer activatedForItemAtIndex: (NSUInteger) index;
+- (void) gridView: (AQGridView *) gridView gestureRecognizer: (UIGestureRecognizer *) recognizer activatedForItemAtIndexPath: (NSIndexPath*) indexPath;
 
 - (CGRect) gridView: (AQGridView *) gridView adjustCellFrame: (CGRect) cellFrame withinGridCellFrame: (CGRect) gridCellFrame;
 
 // Editing
-- (void)gridView:(AQGridView *)aGridView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndex:(NSUInteger)index;
+- (void)gridView:(AQGridView *)aGridView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndex:(NSIndexPath*)indexPath;
 
 @end
 
@@ -122,8 +122,8 @@ extern NSString * const AQGridViewSelectionDidChangeNotification;
 
 	NSInteger						_updateCount;
 
-	NSUInteger						_selectedIndex;
-	NSUInteger						_pendingSelectionIndex;
+	NSIndexPath *					_selectedIndexPath;
+	NSIndexPath *					_pendingSelectionIndexPath;
 
 	CGPoint							_touchBeganPosition;
 
@@ -187,17 +187,17 @@ extern NSString * const AQGridViewSelectionDidChangeNotification;
 
 - (void)doAddVisibleCell: (UIView *)cell;
 
-- (CGRect) rectForItemAtIndex: (NSUInteger) index;
+- (CGRect) rectForItemAtIndexPath: (NSIndexPath*) indexPath;
 - (CGRect) gridViewVisibleBounds;
-- (AQGridViewCell *) cellForItemAtIndex: (NSUInteger) index;
-- (NSUInteger) indexForItemAtPoint: (CGPoint) point;
-- (NSUInteger) indexForCell: (AQGridViewCell *) cell;
+- (AQGridViewCell *) cellForItemAtIndexPath: (NSIndexPath *) indexPath;
+- (NSIndexPath *) indexPathForItemAtPoint: (CGPoint) point;
+- (NSIndexPath *) indexPathForCell: (AQGridViewCell *) cell;
 - (AQGridViewCell *) cellForItemAtPoint: (CGPoint) point;
 
 - (NSArray *) visibleCells;
 - (NSIndexSet *) visibleCellIndices;
 
-- (void) scrollToItemAtIndex: (NSUInteger) index atScrollPosition: (AQGridViewScrollPosition) scrollPosition animated: (BOOL) animated;
+- (void) scrollToItemAtIndexPath: (NSIndexPath *) indexPath atScrollPosition: (AQGridViewScrollPosition) scrollPosition animated: (BOOL) animated;
 
 // Insertion/deletion/reloading
 
@@ -208,16 +208,16 @@ extern NSString * const AQGridViewSelectionDidChangeNotification;
 - (void) deleteItemsAtIndices: (NSIndexSet *) indices withAnimation: (AQGridViewItemAnimation) animation;
 - (void) reloadItemsAtIndices: (NSIndexSet *) indices withAnimation: (AQGridViewItemAnimation) animation;
 
-- (void) moveItemAtIndex: (NSUInteger) index toIndex: (NSUInteger) newIndex withAnimation: (AQGridViewItemAnimation) animation;
+- (void) moveItemAtIndexPath: (NSIndexPath *) indexPath toIndexPath: (NSIndexPath *) newIndex withAnimation: (AQGridViewItemAnimation) animation;
 
 // Selection
 
 @property (nonatomic) BOOL allowsSelection;	// default is YES
 @property (nonatomic) BOOL requiresSelection;	// if YES, tapping on a selected cell will not de-select it
 
-- (NSUInteger) indexOfSelectedItem;		// returns NSNotFound if no item is selected
-- (void) selectItemAtIndex: (NSUInteger) index animated: (BOOL) animated scrollPosition: (AQGridViewScrollPosition) scrollPosition;
-- (void) deselectItemAtIndex: (NSUInteger) index animated: (BOOL) animated;
+- (NSIndexPath *) indexPathOfSelectedItem;		// returns NSNotFound if no item is selected
+- (void) selectItemAtIndexPath: (NSIndexPath *) indexPath animated: (BOOL) animated scrollPosition: (AQGridViewScrollPosition) scrollPosition;
+- (void) deselectItemAtIndexPath: (NSIndexPath *) indexPath animated: (BOOL) animated;
 
 // Appearance
 
@@ -260,8 +260,13 @@ extern NSString * const AQGridViewSelectionDidChangeNotification;
 
 @required
 
-- (NSUInteger) numberOfItemsInGridView: (AQGridView *) gridView;
-- (AQGridViewCell *) gridView: (AQGridView *) gridView cellForItemAtIndex: (NSUInteger) index;
+- (NSUInteger) numberOfSectionsInGridView: (AQGridView *) gridView;
+- (NSUInteger) numberOfRowsInSection: (AQGridView *) gridView section:(NSUInteger) section;
+- (AQGridViewCell *) gridView: (AQGridView *) gridView cellForItemAtIndexPath: (NSIndexPath*) indexPath;
+
+
+//- (NSUInteger) numberOfItemsInGridView: (AQGridView *) gridView;
+//- (AQGridViewCell *) gridView: (AQGridView *) gridView cellForItemAtIndex: (NSUInteger) index;
 
 @optional
 

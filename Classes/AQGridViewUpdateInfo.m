@@ -440,12 +440,16 @@
 	[self updateNewGridDataAndCreateMappingTables];
 }
 
-- (NSUInteger) newIndexForOldIndex: (NSUInteger) oldIndex
+- (NSIndexPath *) newIndexPathForOldIndexPath: (NSIndexPath *) oldIndexPath
 {
-	if ( _oldToNewIndexMap == NULL )
-		return ( oldIndex );
-	
-	return ( _oldToNewIndexMap[oldIndex] );
+    //PF
+    // Need to fix this
+    
+//	if ( _oldToNewIndexMap == NULL )
+//		return ( oldIndex );
+//	
+//	return ( _oldToNewIndexMap[oldIndex] );
+    return nil;
 }
 
 - (NSArray *) sortedInsertItems
@@ -721,216 +725,218 @@
 
 - (NSSet *) animateCellUpdatesUsingVisibleContentRect: (CGRect) contentRect
 {
-	// we might need to change the new visible indices and content rect, if we're looking at the last row and it's going to disappear
-	CGSize gridSize = [_newGridData sizeForEntireGrid];
-	CGFloat maxX = CGRectGetMaxX(contentRect);
-	CGFloat maxY = CGRectGetMaxY(contentRect);
-	BOOL isVertical = (_newGridData.layoutDirection == AQGridViewLayoutDirectionVertical);
-	
-	// indices of items visible from old grid
-	NSIndexSet * oldVisibleIndices = [_oldGridData indicesOfCellsInRect: contentRect];
-	
-    // The line below is commented because it produces too many logs
-	// NSLog( @"Updating from original content rect %@", NSStringFromCGRect(contentRect) );
-	
-	if ( (isVertical) && (maxY > gridSize.height) )
-	{
-		CGFloat diff = maxY - gridSize.height;
-		
-		// grow its height so both incoming and outgoing items get animated
-		contentRect.origin.y = MAX(0.0, contentRect.origin.y - diff);
-		contentRect.size.height += diff;
-		
-		// this will set the bounds for us, and it'll animate thanks to our animation block
-		_gridView.contentSize = CGSizeMake(contentRect.size.width, gridSize.height);
-	}
-	else if ( (!isVertical) && (maxX > gridSize.width) )
-	{
-		CGFloat diff = maxX - gridSize.width;
-		
-		// grow its width so both incoming and outgoing items get animated
-		contentRect.origin.x = MAX(0.0, contentRect.origin.x - diff);
-		contentRect.size.width += diff;
-		
-		// this will set the bounds for us, and it'll animate thanks to our animation block
-		_gridView.contentSize = CGSizeMake(gridSize.width, contentRect.size.height);
-	}
-	else
-	{
-		[_gridView updateGridViewBoundsForNewGridData: _newGridData];
-	}
-	
-    // The line below is fixed because it produces too many logs
-	//NSLog( @"Updated content rect: %@", NSStringFromCGRect(contentRect) );
-	NSIndexSet * newVisibleIndices = [_newGridData indicesOfCellsInRect: contentRect];
-	
-	NSMutableSet * newVisibleCells = [[NSMutableSet alloc] initWithSet: _gridView.animatingCells];
-	
-	// make a lookup table for all currently-animating cells, indexed by their new location's index
-	// we use CF because our keys are integers
-	CFMutableDictionaryRef animatingCellTable = CFDictionaryCreateMutable( kCFAllocatorDefault, (CFIndex)_gridView.animatingCells.count, NULL, &kCFTypeDictionaryValueCallBacks );
-	for ( AQGridViewAnimatorItem * item in newVisibleCells )
-	{
-		// only store real cells here
-		if ( [item.animatingView isKindOfClass: [AQGridViewCell class]] )
-			CFDictionaryAddValue( animatingCellTable, (void *)item.index, item );
-	}
-	
-	// a set of the indices (in old grid data) for all currently-known cells which are now or will become visible
-	NSMutableIndexSet * oldIndicesOfAllVisibleCells = [oldVisibleIndices mutableCopy];
-	for ( NSUInteger idx = [newVisibleIndices firstIndex]; idx != NSNotFound; idx = [newVisibleIndices indexGreaterThanIndex: idx] )
-	{
-		NSUInteger oldIndex = _newToOldIndexMap[idx];
-		if ( oldIndex != NSNotFound )
-			[oldIndicesOfAllVisibleCells addIndex: oldIndex];
-	}
+//	// we might need to change the new visible indices and content rect, if we're looking at the last row and it's going to disappear
+//	CGSize gridSize = [_newGridData sizeForEntireGrid];
+//	CGFloat maxX = CGRectGetMaxX(contentRect);
+//	CGFloat maxY = CGRectGetMaxY(contentRect);
+//	BOOL isVertical = (_newGridData.layoutDirection == AQGridViewLayoutDirectionVertical);
+//	
+//	// indices of items visible from old grid
+//	NSIndexSet * oldVisibleIndices = [_oldGridData indicesOfCellsInRect: contentRect];
+//	
+//    // The line below is commented because it produces too many logs
+//	// NSLog( @"Updating from original content rect %@", NSStringFromCGRect(contentRect) );
+//	
+//	if ( (isVertical) && (maxY > gridSize.height) )
+//	{
+//		CGFloat diff = maxY - gridSize.height;
+//		
+//		// grow its height so both incoming and outgoing items get animated
+//		contentRect.origin.y = MAX(0.0, contentRect.origin.y - diff);
+//		contentRect.size.height += diff;
+//		
+//		// this will set the bounds for us, and it'll animate thanks to our animation block
+//		_gridView.contentSize = CGSizeMake(contentRect.size.width, gridSize.height);
+//	}
+//	else if ( (!isVertical) && (maxX > gridSize.width) )
+//	{
+//		CGFloat diff = maxX - gridSize.width;
+//		
+//		// grow its width so both incoming and outgoing items get animated
+//		contentRect.origin.x = MAX(0.0, contentRect.origin.x - diff);
+//		contentRect.size.width += diff;
+//		
+//		// this will set the bounds for us, and it'll animate thanks to our animation block
+//		_gridView.contentSize = CGSizeMake(gridSize.width, contentRect.size.height);
+//	}
+//	else
+//	{
+//		[_gridView updateGridViewBoundsForNewGridData: _newGridData];
+//	}
+//	
+//    // The line below is fixed because it produces too many logs
+//	//NSLog( @"Updated content rect: %@", NSStringFromCGRect(contentRect) );
+//	NSIndexSet * newVisibleIndices = [_newGridData indicesOfCellsInRect: contentRect];
+//	
+//	NSMutableSet * newVisibleCells = [[NSMutableSet alloc] initWithSet: _gridView.animatingCells];
+//	
+//	// make a lookup table for all currently-animating cells, indexed by their new location's index
+//	// we use CF because our keys are integers
+//	CFMutableDictionaryRef animatingCellTable = CFDictionaryCreateMutable( kCFAllocatorDefault, (CFIndex)_gridView.animatingCells.count, NULL, &kCFTypeDictionaryValueCallBacks );
+//	for ( AQGridViewAnimatorItem * item in newVisibleCells )
+//	{
+//		// only store real cells here
+//		if ( [item.animatingView isKindOfClass: [AQGridViewCell class]] )
+//			CFDictionaryAddValue( animatingCellTable, (void *)item.index, item );
+//	}
+//	
+//	// a set of the indices (in old grid data) for all currently-known cells which are now or will become visible
+//	NSMutableIndexSet * oldIndicesOfAllVisibleCells = [oldVisibleIndices mutableCopy];
+//	for ( NSUInteger idx = [newVisibleIndices firstIndex]; idx != NSNotFound; idx = [newVisibleIndices indexGreaterThanIndex: idx] )
+//	{
+//		NSUInteger oldIndex = _newToOldIndexMap[idx];
+//		if ( oldIndex != NSNotFound )
+//			[oldIndicesOfAllVisibleCells addIndex: oldIndex];
+//	}
+//    
+//    NSMutableIndexSet * movingSet = [[NSMutableIndexSet alloc] initWithIndexSet: oldVisibleIndices];
+//    [movingSet addIndexes: oldIndicesOfAllVisibleCells];
+//    [oldIndicesOfAllVisibleCells release];
+//	
+//	// most items were just moved from one location to another
+//	for ( NSUInteger oldIndex = [movingSet firstIndex]; oldIndex != NSNotFound; oldIndex = [movingSet indexGreaterThanIndex: oldIndex] )
+//	{
+//		NSUInteger newIndex = _oldToNewIndexMap[oldIndex];
+//		AQGridViewAnimatorItem * animatingItem = (AQGridViewAnimatorItem *)CFDictionaryGetValue( animatingCellTable, (void *)oldIndex );
+//		
+//		AQGridViewCell * cell = (AQGridViewCell *)animatingItem.animatingView;
+//		if ( cell == nil )
+//			cell = [_gridView cellForItemAtIndex: oldIndex];
+//		
+//		// don't do this -- we could be revealing things which weren't previously on screen
+//		/*
+//        if ( newIndex == oldIndex )
+//		{
+//			if ( cell != nil )
+//				[newVisibleCells addObject: [AQGridViewAnimatorItem itemWithView: cell index: newIndex]];
+//            continue;
+//		}
+//		*/
+//		if ( newIndex == NSNotFound )
+//        {
+//			continue;
+//        }
+//		
+//		if ( cell == nil )
+//		{
+//			// create a new cell
+//			cell = [_gridView createPreparedCellForIndex: newIndex];
+//			// in its old location
+//			[UIView setAnimationsEnabled: NO];
+//			cell.frame = [_gridView fixCellFrame: cell.frame forGridRect: [_oldGridData cellRectAtIndex: oldIndex]];
+//			[UIView setAnimationsEnabled: YES];
+//		}
+//		else
+//		{
+//			cell.displayIndex = newIndex;
+//		}
+//		
+//		// keep the cell in our internal list
+//		if ( animatingItem != nil )
+//			animatingItem.index = newIndex;		// just update the index on the existing item
+//		else
+//			[newVisibleCells addObject: [AQGridViewAnimatorItem itemWithView: cell index: newIndex]];
+//		
+//		// animate it into its new location
+//		CGRect frame = [_gridView fixCellFrame: cell.frame forGridRect: [_newGridData cellRectAtIndex: newIndex]];
+//		//if ( CGRectEqualToRect(frame, cell.frame) == NO )
+//		//	NSLog( @"Moving frame from %@ to %@", NSStringFromCGRect(cell.frame), NSStringFromCGRect(frame) );
+//		cell.frame = frame;
+//		
+//		// tell the grid view's delegate about it
+//		[_gridView delegateWillDisplayCell: cell atIndex: newIndex];
+//	}
+//	
+//	[movingSet release];
+//	
+//	// delete old items first
+//	if ( _deleteItems.count != 0 )
+//	{
+//		// animate deletion of currently-visible items
+//		for ( AQGridViewUpdateItem * item in _deleteItems )
+//		{
+//			if ( [oldVisibleIndices containsIndex: item.originalIndex] )
+//			{
+//				AQGridViewAnimatorItem * animatingItem = (AQGridViewAnimatorItem *)CFDictionaryGetValue( animatingCellTable, (void *)item.originalIndex );
+//				
+//				AQGridViewCell * deletingCell = (AQGridViewCell *)animatingItem.animatingView;
+//				if ( deletingCell == nil )
+//					deletingCell = [_gridView cellForItemAtIndex: item.originalIndex];
+//				
+//				UIImageView * imageView = [self animateDeletionForCell: deletingCell withAnimation: item.animation];
+//				if ( imageView != nil )
+//				{
+//					if ( animatingItem != nil )
+//					{
+//						animatingItem.animatingView = imageView;
+//						animatingItem.index = NSNotFound;
+//						CFDictionaryRemoveValue( animatingCellTable, (void *)item.originalIndex );
+//					}
+//					else
+//					{
+//						[newVisibleCells addObject: [AQGridViewAnimatorItem itemWithView: imageView index: NSNotFound]];
+//					}
+//				}
+//			}
+//		}
+//	}
+//	
+//	// now insert new items -- no need to take already-animating cells into account here
+//	for ( AQGridViewUpdateItem * item in _insertItems )
+//	{
+//		if ( [newVisibleIndices containsIndex: item.index] )
+//		{
+//			AQGridViewCell * cell = [_gridView createPreparedCellForIndex: item.index usingGridData: _newGridData];
+//			if ( cell != nil )
+//			{
+//				[self animateInsertionForCell: cell withAnimation: item.animation];
+//				[_gridView delegateWillDisplayCell: cell atIndex: item.index];
+//				[newVisibleCells addObject: [AQGridViewAnimatorItem itemWithView: cell index: item.index]];
+//			}
+//		}
+//	}
+//	
+//	// now reload items
+//	for ( AQGridViewUpdateItem * item in _reloadItems )
+//	{
+//		if ( [newVisibleIndices containsIndex: item.index] == NO )
+//			continue;
+//		
+//		AQGridViewAnimatorItem * animatingItem = (AQGridViewAnimatorItem *)CFDictionaryGetValue( animatingCellTable, (void *)item.originalIndex );
+//		
+//		AQGridViewCell * origCell = (AQGridViewCell *)animatingItem.animatingView;
+//		if ( origCell == nil )
+//			origCell = [_gridView cellForItemAtIndex: item.originalIndex];
+//		
+//		// create a new cell with the latest data
+//		AQGridViewCell * newCell = [_gridView createPreparedCellForIndex: item.index];
+//		[_gridView delegateWillDisplayCell: newCell atIndex: item.index];
+//		[self animateReloadForCell: newCell originalCell: origCell withAnimation: item.animation];
+//		
+//		if ( animatingItem != nil )
+//		{
+//			animatingItem.animatingView = newCell;
+//			animatingItem.index = item.originalIndex;
+//		}
+//		else
+//		{
+//			AQGridViewAnimatorItem * tmp = [AQGridViewAnimatorItem itemWithView: newCell index: item.index];
+//			
+//			// newVisibleCells is a set, meaning that it will probably not actually insert the new item
+//			// if there is something matching this index, let's just update that value
+//			animatingItem = [newVisibleCells member: tmp];
+//			if ( animatingItem == nil )
+//				[newVisibleCells addObject: tmp];
+//			else
+//				animatingItem.animatingView = newCell;
+//		}
+//	}
+//	
+//	CFRelease( animatingCellTable );
+//	
+//	return ( [newVisibleCells autorelease] );
     
-    NSMutableIndexSet * movingSet = [[NSMutableIndexSet alloc] initWithIndexSet: oldVisibleIndices];
-    [movingSet addIndexes: oldIndicesOfAllVisibleCells];
-    [oldIndicesOfAllVisibleCells release];
-	
-	// most items were just moved from one location to another
-	for ( NSUInteger oldIndex = [movingSet firstIndex]; oldIndex != NSNotFound; oldIndex = [movingSet indexGreaterThanIndex: oldIndex] )
-	{
-		NSUInteger newIndex = _oldToNewIndexMap[oldIndex];
-		AQGridViewAnimatorItem * animatingItem = (AQGridViewAnimatorItem *)CFDictionaryGetValue( animatingCellTable, (void *)oldIndex );
-		
-		AQGridViewCell * cell = (AQGridViewCell *)animatingItem.animatingView;
-		if ( cell == nil )
-			cell = [_gridView cellForItemAtIndex: oldIndex];
-		
-		// don't do this -- we could be revealing things which weren't previously on screen
-		/*
-        if ( newIndex == oldIndex )
-		{
-			if ( cell != nil )
-				[newVisibleCells addObject: [AQGridViewAnimatorItem itemWithView: cell index: newIndex]];
-            continue;
-		}
-		*/
-		if ( newIndex == NSNotFound )
-        {
-			continue;
-        }
-		
-		if ( cell == nil )
-		{
-			// create a new cell
-			cell = [_gridView createPreparedCellForIndex: newIndex];
-			// in its old location
-			[UIView setAnimationsEnabled: NO];
-			cell.frame = [_gridView fixCellFrame: cell.frame forGridRect: [_oldGridData cellRectAtIndex: oldIndex]];
-			[UIView setAnimationsEnabled: YES];
-		}
-		else
-		{
-			cell.displayIndex = newIndex;
-		}
-		
-		// keep the cell in our internal list
-		if ( animatingItem != nil )
-			animatingItem.index = newIndex;		// just update the index on the existing item
-		else
-			[newVisibleCells addObject: [AQGridViewAnimatorItem itemWithView: cell index: newIndex]];
-		
-		// animate it into its new location
-		CGRect frame = [_gridView fixCellFrame: cell.frame forGridRect: [_newGridData cellRectAtIndex: newIndex]];
-		//if ( CGRectEqualToRect(frame, cell.frame) == NO )
-		//	NSLog( @"Moving frame from %@ to %@", NSStringFromCGRect(cell.frame), NSStringFromCGRect(frame) );
-		cell.frame = frame;
-		
-		// tell the grid view's delegate about it
-		[_gridView delegateWillDisplayCell: cell atIndex: newIndex];
-	}
-	
-	[movingSet release];
-	
-	// delete old items first
-	if ( _deleteItems.count != 0 )
-	{
-		// animate deletion of currently-visible items
-		for ( AQGridViewUpdateItem * item in _deleteItems )
-		{
-			if ( [oldVisibleIndices containsIndex: item.originalIndex] )
-			{
-				AQGridViewAnimatorItem * animatingItem = (AQGridViewAnimatorItem *)CFDictionaryGetValue( animatingCellTable, (void *)item.originalIndex );
-				
-				AQGridViewCell * deletingCell = (AQGridViewCell *)animatingItem.animatingView;
-				if ( deletingCell == nil )
-					deletingCell = [_gridView cellForItemAtIndex: item.originalIndex];
-				
-				UIImageView * imageView = [self animateDeletionForCell: deletingCell withAnimation: item.animation];
-				if ( imageView != nil )
-				{
-					if ( animatingItem != nil )
-					{
-						animatingItem.animatingView = imageView;
-						animatingItem.index = NSNotFound;
-						CFDictionaryRemoveValue( animatingCellTable, (void *)item.originalIndex );
-					}
-					else
-					{
-						[newVisibleCells addObject: [AQGridViewAnimatorItem itemWithView: imageView index: NSNotFound]];
-					}
-				}
-			}
-		}
-	}
-	
-	// now insert new items -- no need to take already-animating cells into account here
-	for ( AQGridViewUpdateItem * item in _insertItems )
-	{
-		if ( [newVisibleIndices containsIndex: item.index] )
-		{
-			AQGridViewCell * cell = [_gridView createPreparedCellForIndex: item.index usingGridData: _newGridData];
-			if ( cell != nil )
-			{
-				[self animateInsertionForCell: cell withAnimation: item.animation];
-				[_gridView delegateWillDisplayCell: cell atIndex: item.index];
-				[newVisibleCells addObject: [AQGridViewAnimatorItem itemWithView: cell index: item.index]];
-			}
-		}
-	}
-	
-	// now reload items
-	for ( AQGridViewUpdateItem * item in _reloadItems )
-	{
-		if ( [newVisibleIndices containsIndex: item.index] == NO )
-			continue;
-		
-		AQGridViewAnimatorItem * animatingItem = (AQGridViewAnimatorItem *)CFDictionaryGetValue( animatingCellTable, (void *)item.originalIndex );
-		
-		AQGridViewCell * origCell = (AQGridViewCell *)animatingItem.animatingView;
-		if ( origCell == nil )
-			origCell = [_gridView cellForItemAtIndex: item.originalIndex];
-		
-		// create a new cell with the latest data
-		AQGridViewCell * newCell = [_gridView createPreparedCellForIndex: item.index];
-		[_gridView delegateWillDisplayCell: newCell atIndex: item.index];
-		[self animateReloadForCell: newCell originalCell: origCell withAnimation: item.animation];
-		
-		if ( animatingItem != nil )
-		{
-			animatingItem.animatingView = newCell;
-			animatingItem.index = item.originalIndex;
-		}
-		else
-		{
-			AQGridViewAnimatorItem * tmp = [AQGridViewAnimatorItem itemWithView: newCell index: item.index];
-			
-			// newVisibleCells is a set, meaning that it will probably not actually insert the new item
-			// if there is something matching this index, let's just update that value
-			animatingItem = [newVisibleCells member: tmp];
-			if ( animatingItem == nil )
-				[newVisibleCells addObject: tmp];
-			else
-				animatingItem.animatingView = newCell;
-		}
-	}
-	
-	CFRelease( animatingCellTable );
-	
-	return ( [newVisibleCells autorelease] );
+    return nil;
 }
 
 @end

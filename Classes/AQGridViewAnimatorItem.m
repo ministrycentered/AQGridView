@@ -10,13 +10,13 @@
 
 @implementation AQGridViewAnimatorItem
 
-@synthesize animatingView, index;
+@synthesize animatingView, indexPath;
 
-+ (AQGridViewAnimatorItem *) itemWithView: (UIView *) aView index: (NSUInteger) anIndex
++ (AQGridViewAnimatorItem *) itemWithView: (UIView *) aView indexPath: (NSIndexPath *) anIndexPath
 {
 	AQGridViewAnimatorItem * result = [[self alloc] init];
 	result.animatingView = aView;
-	result.index = anIndex;
+	result.indexPath = anIndexPath;
 	return ( [result autorelease] );
 }
 
@@ -26,9 +26,9 @@
 	[super dealloc];
 }
 
-- (NSUInteger) hash
+- (NSIndexPath *) hash
 {
-	return ( self.index );
+	return ( self.indexPath );
 }
 
 - (BOOL) isEqual: (AQGridViewAnimatorItem *) o
@@ -36,7 +36,11 @@
 	if ( [o isKindOfClass: [self class]] == NO )
 		return ( NO );
 	
-	return ( o.index == self.index );
+    //PF
+    // need to redo this comparison
+    
+	if ( [o.indexPath compare: self.indexPath] == NSOrderedSame ) return YES;
+    else return NO;
 }
 
 - (NSComparisonResult) compare: (id) obj
@@ -51,12 +55,8 @@
 	}
 	
 	AQGridViewAnimatorItem * item = (AQGridViewAnimatorItem *) obj;
-	if ( self.index < item.index )
-		return ( NSOrderedAscending );
-	if ( self.index > item.index )
-		return ( NSOrderedDescending );
 	
-	return ( NSOrderedSame );
+	return ( [self.indexPath compare:item.indexPath] );
 }
 
 @end

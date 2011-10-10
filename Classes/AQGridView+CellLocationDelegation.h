@@ -38,5 +38,5 @@
 #import "AQGridView.h"
 
 @interface AQGridView (CellLocationDelegation)
-- (void) delegateWillDisplayCell: (AQGridViewCell *) cell atIndex: (NSUInteger) index;
+- (void) delegateWillDisplayCell: (AQGridViewCell *) cell atIndexPath: (NSIndexPath*) index;
 @end

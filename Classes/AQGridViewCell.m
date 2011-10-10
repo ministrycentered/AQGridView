@@ -694,14 +694,14 @@
 	[self setNeedsLayout];
 }
 
-- (NSUInteger) displayIndex
+- (NSIndexPath *) displayIndexPath
 {
-	return ( _displayIndex );
+	return ( _displayIndexPath );
 }
 
-- (void) setDisplayIndex: (NSUInteger) index
+- (void) setDisplayIndexPath: (NSIndexPath *) indexPath
 {
-	_displayIndex = index;
+	_displayIndexPath = indexPath;
 }
 
 - (BOOL) hiddenForAnimation

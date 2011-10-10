@@ -10,12 +10,12 @@
 
 @interface AQGridViewAnimatorItem : NSObject
 
-+ (AQGridViewAnimatorItem *) itemWithView: (UIView *) aView index: (NSUInteger) anIndex;
++ (AQGridViewAnimatorItem *) itemWithView: (UIView *) aView indexPath: (NSIndexPath *) anIndexPath;
 
 @property (nonatomic, retain) UIView * animatingView;	// probably an AQGridViewCell, maybe a UIImageView
-@property (nonatomic, assign) NSUInteger index;			// the DESTINATION index -- use NSNotFound if this is being deleted
+@property (nonatomic, assign) NSIndexPath * indexPath;			// the DESTINATION index -- use NSNotFound if this is being deleted
 
-- (NSUInteger) hash;
+- (NSIndexPath *) hash;
 - (BOOL) isEqual: (AQGridViewAnimatorItem *) o;
 - (NSComparisonResult) compare: (id) obj;
 

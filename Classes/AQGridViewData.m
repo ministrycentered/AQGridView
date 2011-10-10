@@ -43,7 +43,8 @@
 
 @implementation AQGridViewData
 
-@synthesize reorderedIndex=_reorderedIndex, numberOfItems=_numberOfItems, topPadding=_topPadding, bottomPadding=_bottomPadding, leftPadding=_leftPadding, rightPadding=_rightPadding, layoutDirection=_layoutDirection;
+@synthesize reorderedIndexPath=_reorderedIndexPath, numberOfItems=_numberOfItems, topPadding=_topPadding, bottomPadding=_bottomPadding, leftPadding=_leftPadding, rightPadding=_rightPadding, layoutDirection=_layoutDirection;
+@synthesize numberOfSections=_numberOfSections, numberOfItemsInSection=_numberOfItemsInSection;
 
 - (id) initWithGridView: (AQGridView *) gridView
 {
@@ -53,6 +54,7 @@
 	
 	_gridView = gridView;
 	_boundsSize = gridView.bounds.size;
+    _numberOfItemsInSection = [[NSMutableIndexSet alloc] init];
 	
 	return ( self );
 }
@@ -68,7 +70,8 @@
 	theCopy->_leftPadding = _leftPadding;
 	theCopy->_rightPadding = _rightPadding;
 	theCopy->_numberOfItems = _numberOfItems;
-	theCopy->_reorderedIndex = _reorderedIndex;
+	theCopy->_reorderedIndexPath = _reorderedIndexPath;
+    theCopy->_numberOfItemsInSection = _numberOfItemsInSection; 
 	return ( theCopy );
 }
 
@@ -84,7 +87,7 @@
 		[self fixDesiredCellSizeForWidth: boundsSize.width];
 }
 
-- (NSUInteger) itemIndexForPoint: (CGPoint) point
+- (NSIndexPath *) itemIndexPathForPoint: (CGPoint) point
 {
 	// adjust for top padding
 	point.y -= _topPadding;
@@ -97,12 +100,15 @@
 	// now column
 	NSUInteger x = (NSUInteger)floorf(point.x);
 	NSUInteger col = x / (NSUInteger)_actualCellSize.width;
-	
+
+	//PF
+    // need to redo this one
+    
 	NSUInteger result = (row * [self numberOfItemsPerRow]) + col;
 	if ( result >= self.numberOfItems )
 		result = NSNotFound;
-	
-	return ( result );
+//	return ( result );
+    return nil;
 }
 
 - (BOOL) pointIsInLastRow: (CGPoint) point
@@ -117,7 +123,7 @@
 
 - (CGRect) cellRectForPoint: (CGPoint) point
 {
-	return ( [self cellRectAtIndex: [self itemIndexForPoint: point]] );
+	return ( [self cellRectAtIndexPath:[self itemIndexPathForPoint: point]] );
 }
 
 - (void) setDesiredCellSize: (CGSize) desiredCellSize
@@ -154,6 +160,10 @@
 
 - (CGSize) sizeForEntireGrid
 {
+    //PF
+    // Here I will need to calculate how big each section is
+    // along with the size of the section header view
+    
 	NSUInteger numPerRow = [self numberOfItemsPerRow];
     if ( numPerRow == 0 )       // avoid a divide-by-zero exception
         return ( CGSizeZero );
@@ -185,13 +195,16 @@
 	return ( cols );	
 }
 
-- (CGRect) cellRectAtIndex: (NSUInteger) index
+- (CGRect) cellRectAtIndexPath: (NSIndexPath *) indexPath
 {
+    //PF
+    // Need to calculate where this is based off the section that this index is in.
+    
 	NSUInteger numPerRow = [self numberOfItemsPerRow];
     if ( numPerRow == 0 )       // avoid a divide-by-zero exception
         return ( CGRectZero );
-	NSUInteger skipRows = index / numPerRow;
-	NSUInteger skipCols = index % numPerRow;
+	NSUInteger skipRows = indexPath.row / numPerRow;
+	NSUInteger skipCols = indexPath.row % numPerRow;
 	
 	CGRect result = CGRectZero;
 	result.origin.x = _actualCellSize.width * (CGFloat)skipCols + _leftPadding;
@@ -203,33 +216,43 @@
 
 - (NSIndexSet *) indicesOfCellsInRect: (CGRect) aRect
 {
+    //PF
+    // Need to take into account the sections and section header views
+    // when creating the index set of visible cells
+    
 	NSMutableIndexSet * result = [NSMutableIndexSet indexSet];
-	NSUInteger numPerRow = [self numberOfItemsPerRow];
+//	NSUInteger numPerRow = [self numberOfItemsPerRow];
 	
 	for ( NSUInteger i = 0; i < _numberOfItems; i++ )
 	{
-		CGRect cellRect = [self cellRectAtIndex: i];
-		
-		if ( CGRectGetMaxY(cellRect) < CGRectGetMinY(aRect) )
-		{
-			// jump forward to the next row
-			i += (numPerRow - 1);
-			continue;
-		}
-		
-		if ( CGRectIntersectsRect(cellRect, aRect) )
-		{
-			[result addIndex: i];
-			if ( (CGRectGetMaxY(cellRect) > CGRectGetMaxY(aRect)) &&
-				 (CGRectGetMaxX(cellRect) > CGRectGetMaxX(aRect)) )
-			{
-				// passed the bottom-right edge of the given rect
-				break;
-			}
-		}
+//		CGRect cellRect = [self cellRectAtIndexPath: i];
+//		
+//		if ( CGRectGetMaxY(cellRect) < CGRectGetMinY(aRect) )
+//		{
+//			// jump forward to the next row
+//			i += (numPerRow - 1);
+//			continue;
+//		}
+//		
+//		if ( CGRectIntersectsRect(cellRect, aRect) )
+//		{
+//			[result addIndex: i];
+//			if ( (CGRectGetMaxY(cellRect) > CGRectGetMaxY(aRect)) &&
+//				 (CGRectGetMaxX(cellRect) > CGRectGetMaxX(aRect)) )
+//			{
+//				// passed the bottom-right edge of the given rect
+//				break;
+//			}
+//		}
 	}
 	
 	return ( result );
+}
+
+- (void)dealloc
+{
+    [_numberOfItemsInSection release];
+    [super dealloc];
 }
 
 @end

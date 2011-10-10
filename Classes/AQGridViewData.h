@@ -51,12 +51,16 @@
 	CGFloat						_leftPadding;
 	CGFloat						_rightPadding;
 	
+    NSUInteger                  _numberOfSections;
+    NSMutableIndexSet *          _numberOfItemsInSection;
 	NSUInteger					_numberOfItems;
-	NSUInteger					_reorderedIndex;
+	NSIndexPath	*               _reorderedIndexPath;
 }
 
 - (id) initWithGridView: (AQGridView *) gridView;
 
+@property (nonatomic) NSUInteger numberOfSections;
+@property (nonatomic, retain) NSMutableIndexSet *numberOfItemsInSection;
 @property (nonatomic) NSUInteger numberOfItems;
 
 @property (nonatomic) CGFloat topPadding, bottomPadding, leftPadding, rightPadding;
@@ -66,10 +70,10 @@
 - (void) gridViewDidChangeBoundsSize: (CGSize) boundsSize;
 
 // nabbed from UITableViewRowData-- will we need something like this?
-@property (nonatomic) NSUInteger reorderedIndex;
+@property (nonatomic, retain) NSIndexPath * reorderedIndexPath;
 
 // Turning view locations into item indices
-- (NSUInteger) itemIndexForPoint: (CGPoint) point;
+- (NSIndexPath *) itemIndexPathForPoint: (CGPoint) point;
 - (BOOL) pointIsInLastRow: (CGPoint) point;
 
 // grid cell sizes-- for the layout calculations
@@ -81,7 +85,7 @@
 - (CGSize) sizeForEntireGrid;
 - (NSUInteger) numberOfItemsPerRow;
 
-- (CGRect) cellRectAtIndex: (NSUInteger) index;
+- (CGRect) cellRectAtIndexPath: (NSIndexPath *) indexPath;
 - (CGRect) cellRectForPoint: (CGPoint) point;
 - (NSIndexSet *) indicesOfCellsInRect: (CGRect) rect;		// NB: Grid Cells only-- AQGridViewCells might not actually intersect
 

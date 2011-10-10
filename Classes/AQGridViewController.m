@@ -115,9 +115,9 @@
 
 - (void) viewWillAppear: (BOOL) animated
 {
-	if ( (_clearsSelectionOnViewWillAppear) && ([self.gridView indexOfSelectedItem] != NSNotFound) )
+	if ( (_clearsSelectionOnViewWillAppear) && ([self.gridView indexPathOfSelectedItem] != nil) )
 	{
-		[self.gridView deselectItemAtIndex: [self.gridView indexOfSelectedItem] animated: NO];
+		[self.gridView deselectItemAtIndexPath: [self.gridView indexPathOfSelectedItem] animated: NO];
 	}
 }
 
@@ -159,16 +159,26 @@
 #pragma mark -
 #pragma mark Grid View Data Source
 
+- (NSUInteger) numberOfSectionsInGridView: (AQGridView *) gridView
+{
+    return ( 0 );
+}
+
+- (NSUInteger) numberOfRowsInSection: (AQGridView *) gridView section:(NSUInteger)section
+{
+    return ( 0 );
+}
+
 - (NSUInteger) numberOfItemsInGridView: (AQGridView *) gridView
 {
 	return ( 0 );
 }
 
-
-- (AQGridViewCell *) gridView: (AQGridView *) gridView cellForItemAtIndex: (NSUInteger) index
+- (AQGridViewCell *) gridView: (AQGridView *) gridView cellForItemAtIndexPath: (NSIndexPath*) indexPath
 {
-	return ( nil );
+    return ( nil );
 }
+
 
 #pragma mark -
 #pragma mark UIPopoverControllerDelegate methods

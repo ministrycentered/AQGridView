@@ -105,7 +105,7 @@
 - (AQGridViewData *) newGridViewData;
 - (NSUInteger) numberOfItemsAfterUpdates;
 
-- (NSUInteger) newIndexForOldIndex: (NSUInteger) oldIndex;
+- (NSIndexPath *) newIndexPathForOldIndexPath: (NSIndexPath *) oldIndexPath;
 
 // returns a list of all the views being animated
 - (NSSet *) animateCellUpdatesUsingVisibleContentRect: (CGRect) contentRect;

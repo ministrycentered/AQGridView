@@ -70,7 +70,7 @@ typedef enum {
 	UIView *				_rightSeparatorView;
 	NSTimer *				_fadeTimer;
 	CFMutableDictionaryRef	_selectionColorInfo;
-	NSUInteger				_displayIndex;			// le sigh...
+	NSIndexPath *			_displayIndexPath;			// le sigh...
 	struct {
 		unsigned int separatorStyle:3;
 		unsigned int selectionStyle:3;
